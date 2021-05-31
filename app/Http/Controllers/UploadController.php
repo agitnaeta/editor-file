@@ -13,7 +13,6 @@ class UploadController extends Controller
             $validateImage = Validator::make($request->all(), [
                 'upload' => 'required|mimes:jpg,png,webp,gif',
             ]);
-            
             if(!$validateImage->fails())
             {
                 $image = $this->image($request);
@@ -23,11 +22,19 @@ class UploadController extends Controller
             $validateAudio = Validator::make($request->all(), [
                 'upload' => 'required|mimes:mp3,wav',
             ]);
-            
             if(!$validateAudio->fails())
             {
                 $audio = $this->audio($request);
                 return $audio;
+            }
+
+            $validateDocument = Validator::make($request->all(), [
+                'upload' => 'required|mimes:doc,docx,xls,xlsx,pdf',
+            ]);
+            if(!$validateDocument->fails())
+            {
+                $document = $this->document($request);
+                return $document;
             }
 
         }catch (Exception $exception){
@@ -60,6 +67,20 @@ class UploadController extends Controller
         $CKEditorFuncNum = $request->input('CKEditorFuncNum');
         $url = asset('audio/'.$fileName);
         $msg = 'Audio successfully uploaded'; 
+
+        return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
+    }
+
+    public function document(Request $request)
+    {
+        $path = 'document';
+		$file = $request->file('upload');
+        $fileName = $file->getClientOriginalName();
+		$file->move($path,$fileName);
+
+        $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+        $url = asset('document/'.$fileName);
+        $msg = 'Document successfully uploaded'; 
 
         return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
     }

@@ -15,6 +15,7 @@
 
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('ckeditor/adapters/jquery.js') }}"></script>
     @yield('script')
 </body>
 </html>

@@ -25,7 +25,7 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        return view('document.create-4');
+        return view('document.create');
     }
 
     /**
