@@ -1,5 +1,6 @@
-- composer install
-- npm install
-- npm run dev
-- php artisan key:generate
-- php artisan migrate
+- run 'composer install'
+- set database on .env
+- run 'npm install'
+- run 'npm run dev'
+- run 'php artisan key:generate'
+- run 'php artisan migrate'
