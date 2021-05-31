@@ -17,8 +17,8 @@
                                 <input type="text" class="form-control" name="title" id="title" value="{{ $document->title }}">
                             </div>
                             <div class="form-group">
-                                <label for="editor">Konten</label>
-                                <textarea class="form-control" id="editor" name="content">{!! $document->content !!}</textarea>
+                                <label for="content">Konten</label>
+                                <textarea class="form-control" id="content" name="content">{!! $document->content !!}</textarea>
                             </div>
                             <div class="form-group">
                                 <button class="btn btn-primary">Edit</button>
@@ -33,9 +33,11 @@
 @endsection
 @section('script')
     <script>
-        CKEDITOR.replace('content', {
+
+        $( 'textarea#content' ).ckeditor({
             filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
             filebrowserUploadMethod: 'form'
         });
+
     </script>
 @endsection

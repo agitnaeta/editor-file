@@ -33,22 +33,11 @@
 @endsection
 @section('script')
     <script>
-        // CKEDITOR.replace('content', {
-        //     filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
-        //     filebrowserUploadMethod: 'form'
-        // });
 
         $( 'textarea#content' ).ckeditor({
             filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
             filebrowserUploadMethod: 'form'
         });
         
-        // $(document).ready(function() {
-        //     $( 'textarea#content' ).val( `<video width="320" height="240" controls>
-        //             <source src="{{ asset('video/mov_bbb.mp4') }}" type="video/mp4">
-        //             Your browser does not support the video tag.
-        //             </video>` );
-        // });
-
     </script>
 @endsection
