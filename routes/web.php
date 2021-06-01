@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UploadController;
+use App\Http\Controllers\DocumentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +16,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('document.index');
 });
+
+Route::group(['prefix'=>'document'],function()
+{
+    Route::get('index', [DocumentController::class,'index'])->name('document.index');
+    Route::get('create', [DocumentController::class,'create'])->name('document.create');
+    Route::post('store', [DocumentController::class,'store'])->name('document.store');
+    Route::get('show/{id}', [DocumentController::class,'show'])->name('document.show');
+    Route::get('edit/{id}', [DocumentController::class,'edit'])->name('document.edit');
+    Route::post('update/{id}', [DocumentController::class,'update'])->name('document.update');
+    Route::get('destroy/{id}', [DocumentController::class,'destroy'])->name('document.destroy');
+});
+
+Route::post('upload', [UploadController::class,'upload'])->name('upload');
