@@ -56,6 +56,142 @@
         </div>
     </div>
     
+    <!-- Modal -->
+    <div class="modal fade" id="recordVideoModal" tabindex="-1" aria-labelledby="recordVideoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg  modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recordVideoModalLabel">Record Audio</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <video id="myVideo" playsinline class="video-js vjs-default-skin"></video>
+                       <button id="attachVideo" class="btn btn-success btn-block d-none">Attach Video</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+
+    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    var isEdge = /Edge/.test(navigator.userAgent);
+    var isOpera = !!window.opera || navigator.userAgent.indexOf('OPR/') !== -1;
+
+    function applyAudioWorkaround() {
+        if (isSafari || isEdge) {
+            if (isSafari && window.MediaRecorder !== undefined) {
+                // this version of Safari has MediaRecorder
+                // but use the only supported mime type
+                options.plugins.record.audioMimeType = 'audio/mp4';
+            } else {
+                // support recording in safari 11/12
+                // see https://github.com/collab-project/videojs-record/issues/295
+                options.plugins.record.audioRecorderType = StereoAudioRecorder;
+                options.plugins.record.audioSampleRate = 44100;
+                options.plugins.record.audioBufferSize = 4096;
+                options.plugins.record.audioChannels = 2;
+            }
+
+            console.log('applied audio workarounds for this browser');
+        }
+    }
+
+    function applyVideoWorkaround() {
+        // use correct video mimetype for opera
+        if (isOpera) {
+            options.plugins.record.videoMimeType = 'video/webm\;codecs=vp8'; // or vp9
+        }
+    }
+
+    function applyScreenWorkaround() {
+        // Polyfill in Firefox.
+        // See https://blog.mozilla.org/webrtc/getdisplaymedia-now-available-in-adapter-js/
+        if (adapter.browserDetails.browser == 'firefox') {
+            adapter.browserShim.shimGetDisplayMedia(window, 'screen');
+        }
+    }
+    var options = {
+        controls: true,
+        bigPlayButton: false,
+        fluid: true,
+        plugins: {
+            record: {
+                audio: true,
+                video: true,
+                maxLength: 10,
+                debug: true
+            }
+        }
+    };
+
+    // apply some workarounds for opera browser
+    applyVideoWorkaround();
+
+    var player = videojs('myVideo', options, function() {
+        // print version information at startup
+        var msg = 'Using video.js ' + videojs.VERSION +
+            ' with videojs-record ' + videojs.getPluginVersion('record') +
+            ' and recordrtc ' + RecordRTC.version;
+        videojs.log(msg);
+    });
+
+    // error handling
+    player.on('deviceError', function() {
+        console.log('device error:', player.deviceErrorCode);
+    });
+
+    player.on('error', function(element, error) {
+        console.error(error);
+    });
+
+    // user clicked the record button and started recording
+    player.on('startRecord', function() {
+        console.log('started recording!');
+    });
+
+    // user completed recording and stream is available
+    player.on('finishRecord', function()
+    {
+        let blob = player.recordedData;
+        console.log(blob);
+        let filename = 'sdfgsdfg';
+
+        $("#attachVideo").removeClass("d-none");
+        $("#attachVideo").click(function()
+        {
+            var fd = new FormData();                  
+            fd.append("upload",blob, filename);
+            fd.append("_token", "{{ csrf_token() }}");
+            $.ajax({
+                type: "POST",
+                url: "{{ route('upload') }}",
+                data: fd,                         
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response)
+                {
+                    let html = `<p><video width="100%" controls><source src="${response}" type="video/mp4"></video></p><p></p>`;
+
+                    player.record().reset();
+
+                    $("#attachVideo").addClass("d-none");
+                    $("#recordVideoModal").modal("hide");
+
+                    CKEDITOR.instances.content.insertHtml(html);
+                }
+            });
+        });
+    });
+</script>
+    
 @endsection
 @section('script')
     <script>
@@ -74,11 +210,24 @@
             }
         });
 
-        editor.ui.addButton('SuperButton', {
+        editor.addCommand("recordVideo", {
+            exec: function(edt) {
+                $("#recordVideoModal").modal("show");
+            }
+        });
+
+        editor.ui.addButton('recordAudioButton', {
             label: "Record Audio",
             command: 'recordAudio',
             toolbar: 'insert',
             icon: '{{ asset('icon/recordaudio.png') }}'
+        });
+
+        editor.ui.addButton('recordButton', {
+            label: "Record Video",
+            command: 'recordVideo',
+            toolbar: 'insert',
+            icon: '{{ asset('icon/recordvideo.png') }}'
         });
         
     </script>
@@ -217,7 +366,7 @@
                     processData: false,
                     success: function(response)
                     {
-                        let html = `<audio style="width: 100%" controls="" src="${response}"></audio><p></p>`;
+                        let html = `<p><audio style="width: 100%" controls="" src="${response}"></audio></p><p></p>`;
 
                         $("#recordAudioModal").modal("hide");
                         CKEDITOR.instances.content.insertHtml(html);

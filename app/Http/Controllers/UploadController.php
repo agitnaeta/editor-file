@@ -51,6 +51,29 @@ class UploadController extends Controller
                 return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
             }
 
+            // Upload Audio
+            $validateVideo = Validator::make($request->all(), [
+                'upload' => 'required|mimes:mkv,mp4',
+            ]);
+            if(!$validateVideo->fails())
+            {
+                $path = 'video';
+                $file = $request->file('upload');
+                $fileName = 'video'.date('dmYHis').'.'.$file->extension();
+                $file->move($path,$fileName);
+
+                $url = asset('video/'.$fileName);
+                $msg = 'Video successfully uploaded'; 
+                $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+
+                if(!$CKEditorFuncNum)
+                {
+                    return $url;
+                }
+
+                return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
+            }
+
             // Upload Document
             $validateDocument = Validator::make($request->all(), [
                 'upload' => 'required|mimes:doc,docx,xls,xlsx,pdf',
