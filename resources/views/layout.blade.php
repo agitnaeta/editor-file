@@ -6,6 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <link href="{{ asset('css/app.css') }}"  rel="stylesheet">
+    <style>
+
+        audio {
+            margin: 0 auto !important;
+            display: block !important;
+            width: 100%;
+        }
+    </style>
 
     <title>@yield('title')</title>
 </head>

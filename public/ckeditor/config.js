@@ -9,4 +9,5 @@ CKEDITOR.editorConfig = function( config ) {
 	// config.uiColor = '#AADC6E';
 	config.extraPlugins = 'html5audio';
 	config.allowedContent = true;
+	config.extraAllowedContent = 'hr {*}(*)';
 };
