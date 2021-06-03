@@ -25,6 +25,7 @@ Route::group(['prefix'=>'document'],function()
     Route::get('create', [DocumentController::class,'create'])->name('document.create');
     Route::post('store', [DocumentController::class,'store'])->name('document.store');
     Route::get('show/{id}', [DocumentController::class,'show'])->name('document.show');
+    Route::get('get/{id}', [DocumentController::class,'get'])->name('document.get');
     Route::get('edit/{id}', [DocumentController::class,'edit'])->name('document.edit');
     Route::post('update/{id}', [DocumentController::class,'update'])->name('document.update');
     Route::get('destroy/{id}', [DocumentController::class,'destroy'])->name('document.destroy');

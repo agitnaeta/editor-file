@@ -57,6 +57,18 @@ class DocumentController extends Controller
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function get($id)
+    {
+        $document = Document::find($id);
+        return $document;
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -64,8 +76,7 @@ class DocumentController extends Controller
      */
     public function edit($id)
     {
-        $document = Document::find($id);
-        return view('document.edit', compact('document'));
+        return view('document.edit', compact('id'));
     }
 
     /**
