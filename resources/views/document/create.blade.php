@@ -77,16 +77,67 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="attachDocumentModal" tabindex="-1" aria-labelledby="attachDocumentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg  modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attachDocumentModalLabel">Attach Document</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <form id="documentForm" enctype="multipart/form-data">
+                            {{ csrf_field() }}
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="upload" accept=".xls,.xlsx,.doc,.docx,.pdf">
+                                <label class="custom-file-label" name="upload">Choose file (Word, Excel, PDF)</label>
+                            </div>
+                            <button class="btn btn-success btn-block mt-2">Attach Document</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 @section('script')
     <script>
         
         let editor = CKEDITOR.replace('content', {
-                filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
-                filebrowserUploadMethod: 'form'
-            });
+            filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
+            filebrowserUploadMethod: 'form'
+        });
 
+        // Button
+        editor.ui.addButton('recordAudioButton', {
+            label: "Record Audio",
+            command: 'recordAudio',
+            toolbar: 'insertCustom',
+            icon: '{{ asset('icon/recordaudio.png') }}'
+        });
+
+        editor.ui.addButton('recordButton', {
+            label: "Record Video",
+            command: 'recordVideo',
+            toolbar: 'insertCustom',
+            icon: '{{ asset('icon/recordvideo.png') }}'
+        });
+
+        editor.ui.addButton('documentButton', {
+            label: "Attach Document",
+            command: 'attachDocument',
+            toolbar: 'insertCustom',
+            icon: '{{ asset('icon/document.png') }}'
+        });
+        
+        // Command
         editor.addCommand("recordAudio", {
             exec: function(edt) {
                 $("#recordingsList").html("");
@@ -102,20 +153,12 @@
             }
         });
 
-        editor.ui.addButton('recordAudioButton', {
-            label: "Record Audio",
-            command: 'recordAudio',
-            toolbar: 'insert',
-            icon: '{{ asset('icon/recordaudio.png') }}'
+        editor.addCommand("attachDocument", {
+            exec: function(edt) {
+                $("#attachDocumentModal").modal("show");
+            }
         });
 
-        editor.ui.addButton('recordButton', {
-            label: "Record Video",
-            command: 'recordVideo',
-            toolbar: 'insert',
-            icon: '{{ asset('icon/recordvideo.png') }}'
-        });
-        
     </script>
 
     <script>
@@ -378,6 +421,27 @@
             $("#recordingsList").html(au);
             $("#attachRecord").removeClass("d-none").attr("disabled", false);
         }
+
+        $("#documentForm").submit(function(e)
+        {
+            e.preventDefault();
+            var formData = new FormData($(this)[0]);
+            $.ajax({
+                type: "POST",
+                url: "{{ route('upload') }}",
+                data: formData,                         
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response)
+                {
+                    let html = `<p><a href="${response}">${response}</a><p></p>`;
+
+                    $("#attachDocumentModal").modal("hide");
+                    CKEDITOR.instances.content.insertHtml(html);
+                }
+            });
+        });
 
       </script>
 @endsection
