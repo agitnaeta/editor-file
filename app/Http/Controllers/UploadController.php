@@ -10,78 +10,101 @@ class UploadController extends Controller
     public function upload(Request $request)
     {
         try{
+            // Upload Image
             $validateImage = Validator::make($request->all(), [
                 'upload' => 'required|mimes:jpg,png,webp,gif',
             ]);
             if(!$validateImage->fails())
             {
-                $image = $this->image($request);
-                return $image;
+                $path = 'image';
+                $file = $request->file('upload');
+                $fileName = $file->getClientOriginalName();
+                $file->move($path,$fileName);
+
+                $url = asset('image/'.$fileName);
+                $msg = 'Image successfully uploaded'; 
+                $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+
+                if(!$CKEditorFuncNum)
+                {
+                    return $url;
+                }
+
+                return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
             }
 
+            // Upload Audio
             $validateAudio = Validator::make($request->all(), [
                 'upload' => 'required|mimes:mp3,wav',
             ]);
             if(!$validateAudio->fails())
             {
-                $audio = $this->audio($request);
-                return $audio;
+                $path = 'audio';
+                $file = $request->file('upload');
+                $fileName = 'audio'.date('dmYHis').'.'.$file->extension();
+                $file->move($path,$fileName);
+
+                $url = asset('audio/'.$fileName);
+                $msg = 'Audio successfully uploaded'; 
+                $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+
+                if(!$CKEditorFuncNum)
+                {
+                    return $url;
+                }
+
+                return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
             }
 
+            // Upload Audio
+            $validateVideo = Validator::make($request->all(), [
+                'upload' => 'required|mimes:mkv,mp4',
+            ]);
+            if(!$validateVideo->fails())
+            {
+                $path = 'video';
+                $file = $request->file('upload');
+                $fileName = 'video'.date('dmYHis').'.'.$file->extension();
+                $file->move($path,$fileName);
+
+                $url = asset('video/'.$fileName);
+                $msg = 'Video successfully uploaded'; 
+                $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+
+                if(!$CKEditorFuncNum)
+                {
+                    return $url;
+                }
+
+                return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
+            }
+
+            // Upload Document
             $validateDocument = Validator::make($request->all(), [
                 'upload' => 'required|mimes:doc,docx,xls,xlsx,pdf',
             ]);
             if(!$validateDocument->fails())
             {
-                $document = $this->document($request);
-                return $document;
+                $path = 'document';
+                $file = $request->file('upload');
+                $fileName = $file->getClientOriginalName();
+                $file->move($path,$fileName);
+
+                $url = asset('document/'.$fileName);
+                $msg = 'Document successfully uploaded'; 
+                $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+
+                if(!$CKEditorFuncNum)
+                {
+                    return $url;
+                }
+                
+                return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
             }
 
         }catch (Exception $exception){
             return response()->json(['message'=> 'error', 'exception'=>$exception->getMessage()], 500);
         }
 
-    }
-
-    public function image(Request $request)
-    {
-        $path = 'image';
-		$file = $request->file('upload');
-        $fileName = $file->getClientOriginalName();
-		$file->move($path,$fileName);
-
-        $CKEditorFuncNum = $request->input('CKEditorFuncNum');
-        $url = asset('image/'.$fileName);
-        $msg = 'Image successfully uploaded'; 
-
-        return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
-    }
-
-    public function audio(Request $request)
-    {
-        $path = 'audio';
-		$file = $request->file('upload');
-        $fileName = $file->getClientOriginalName();
-		$file->move($path,$fileName);
-
-        $CKEditorFuncNum = $request->input('CKEditorFuncNum');
-        $url = asset('audio/'.$fileName);
-        $msg = 'Audio successfully uploaded'; 
-
-        return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
-    }
-
-    public function document(Request $request)
-    {
-        $path = 'document';
-		$file = $request->file('upload');
-        $fileName = $file->getClientOriginalName();
-		$file->move($path,$fileName);
-
-        $CKEditorFuncNum = $request->input('CKEditorFuncNum');
-        $url = asset('document/'.$fileName);
-        $msg = 'Document successfully uploaded'; 
-
-        return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
     }
 }

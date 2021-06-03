@@ -32,12 +32,4 @@
     
 @endsection
 @section('script')
-    <script>
-
-        $( 'textarea#content' ).ckeditor({
-            filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
-            filebrowserUploadMethod: 'form'
-        });
-        
-    </script>
 @endsection

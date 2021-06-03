@@ -10,15 +10,15 @@
                         <h4>Edit Document</h4>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('document.update', $document->id) }}" method='POST'>
+                        <form action="{{ route('document.update', $id) }}" method='POST'>
                             {{ csrf_field() }}
                             <div class="form-group">
                                 <label for="title">Judul</label>
-                                <input type="text" class="form-control" name="title" id="title" value="{{ $document->title }}">
+                                <input type="text" class="form-control" name="title" id="title" value="">
                             </div>
                             <div class="form-group">
                                 <label for="content">Konten</label>
-                                <textarea class="form-control" id="content" name="content">{!! $document->content !!}</textarea>
+                                <textarea class="form-control" id="content" name="content"></textarea>
                             </div>
                             <div class="form-group">
                                 <button class="btn btn-primary">Edit</button>
@@ -33,11 +33,9 @@
 @endsection
 @section('script')
     <script>
-
-        $( 'textarea#content' ).ckeditor({
-            filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
-            filebrowserUploadMethod: 'form'
+        $.get( "{{ route('document.get', $id) }}", function( data ) {
+            $('#title').val(data.title);
+            CKEDITOR.instances.content.insertHtml(data.content);
         });
-
     </script>
 @endsection
