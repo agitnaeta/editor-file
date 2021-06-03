@@ -105,6 +105,34 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="attachImageModal" tabindex="-1" aria-labelledby="attachImageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg  modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attachImageModalLabel">Attach Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <form id="imageForm" enctype="multipart/form-data">
+                            {{ csrf_field() }}
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="upload" accept=".jpg,.png,.webp,.gif">
+                                <label class="custom-file-label" name="upload">Choose file (JPG, PNG, WEBP, GIF)</label>
+                            </div>
+                            <button class="btn btn-success btn-block mt-2">Attach Image</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
 
 @endsection
 @section('script')
@@ -130,6 +158,13 @@
             icon: '{{ asset('icon/recordvideo.png') }}'
         });
 
+        editor.ui.addButton('attachImage', {
+            label: "Attach Image",
+            command: 'attachImage',
+            toolbar: 'insertCustom',
+            icon: '{{ asset('icon/image.png') }}'
+        });
+
         editor.ui.addButton('documentButton', {
             label: "Attach Document",
             command: 'attachDocument',
@@ -150,6 +185,12 @@
         editor.addCommand("recordVideo", {
             exec: function(edt) {
                 $("#recordVideoModal").modal("show");
+            }
+        });
+
+        editor.addCommand("attachImage", {
+            exec: function(edt) {
+                $("#attachImageModal").modal("show");
             }
         });
 
@@ -443,5 +484,27 @@
             });
         });
 
+        $("#imageForm").submit(function(e)
+        {
+            e.preventDefault();
+            console.log('ok');
+            var formData = new FormData($(this)[0]);
+            $.ajax({
+                type: "POST",
+                url: "{{ route('upload') }}",
+                data: formData,                         
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(response)
+                {
+                    let html = `<p><img src="${response}"><p></p>`;
+
+                    $("#attachImageModal").modal("hide");
+                    CKEDITOR.instances.content.insertHtml(html);
+                }
+            });
+        });
+        
       </script>
 @endsection

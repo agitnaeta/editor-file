@@ -21,9 +21,14 @@ class UploadController extends Controller
                 $fileName = $file->getClientOriginalName();
                 $file->move($path,$fileName);
 
-                $CKEditorFuncNum = $request->input('CKEditorFuncNum');
                 $url = asset('image/'.$fileName);
                 $msg = 'Image successfully uploaded'; 
+                $CKEditorFuncNum = $request->input('CKEditorFuncNum');
+
+                if(!$CKEditorFuncNum)
+                {
+                    return $url;
+                }
 
                 return '<script>window.parent.CKEDITOR.tools.callFunction("'.$CKEditorFuncNum.'", "'.$url.'", "'.$msg.'")</script>';
             }
