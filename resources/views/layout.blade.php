@@ -58,10 +58,10 @@
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
     <script src="{{ asset('ckeditor/adapters/jquery.js') }}"></script>
     
-    @yield('script')
-
     @include('ckeditor')
     @include('audiorecorder')
     @include('videorecorder')
+    
+    @yield('script')
 </body>
 </html>

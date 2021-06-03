@@ -33,9 +33,11 @@
 @endsection
 @section('script')
     <script>
-        $.get( "{{ route('document.get', $id) }}", function( data ) {
-            $('#title').val(data.title);
-            CKEDITOR.instances.content.insertHtml(data.content);
+        $(document).ready(function() {
+            $.get( "{{ route('document.get', $id) }}", function( data ) {
+                $('#title').val(data.title);
+                CKEDITOR.instances.content.insertHtml(data.content);
+            });
         });
     </script>
 @endsection
