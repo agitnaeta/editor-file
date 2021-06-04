@@ -23,7 +23,9 @@ Route::group(['prefix'=>'document'],function()
 {
     Route::get('index', [DocumentController::class,'index'])->name('document.index');
     Route::get('create', [DocumentController::class,'create'])->name('document.create');
+    Route::get('create-multiple', [DocumentController::class,'createMultiple'])->name('document.createMultiple');
     Route::post('store', [DocumentController::class,'store'])->name('document.store');
+    Route::post('store-multiple', [DocumentController::class,'storeMultiple'])->name('document.storeMultiple');
     Route::get('show/{id}', [DocumentController::class,'show'])->name('document.show');
     Route::get('get/{id}', [DocumentController::class,'get'])->name('document.get');
     Route::get('edit/{id}', [DocumentController::class,'edit'])->name('document.edit');

@@ -84,16 +84,17 @@
     $("#attachVideo").click(function()
     {
         let blob = player.recordedData;
+        console.log(blob)
         let filename = 'sdfgsdfg';
-        var fd = new FormData();      
+        var fd = new FormData();
 
         fd.append("upload",blob, filename);
         fd.append("_token", "{{ csrf_token() }}");
-        
+
         $.ajax({
             type: "POST",
             url: "{{ route('upload') }}",
-            data: fd,                         
+            data: fd,
             cache: false,
             contentType: false,
             processData: false,
@@ -106,7 +107,14 @@
                 $("#attachVideo").addClass("d-none");
                 $("#recordVideoModal").modal("hide");
 
-                CKEDITOR.instances.content.insertHtml(html);
+                var namaEditor
+                if($('#video-editor-name').val()){
+                    namaEditor = $('#video-editor-name').val();
+                }
+                else{
+                    namaEditor = 'content'
+                }
+                CKEDITOR.instances[namaEditor].insertHtml(html);
             }
         });
     });

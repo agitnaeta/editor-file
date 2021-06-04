@@ -7,7 +7,7 @@
     var rec; 							//Recorder.js object
     var input; 							//MediaStreamAudioSourceNode we'll be recording
 
-    // shim for AudioContext when it's not avb. 
+    // shim for AudioContext when it's not avb.
     var AudioContext = window.AudioContext || window.webkitAudioContext;
     var audioContext //audio context to help us record
 
@@ -20,7 +20,7 @@
 
         $("#recordingsList").html('');
         $("#recordButton").addClass("d-none");
-        $("#stopButton").removeClass("d-none");
+        $("#stopButton").removeClass("d-none").prop('disabled',false);
         $("#attachRecord").addClass("d-none");
 
         recordButton.disabled = true;
@@ -110,7 +110,7 @@
     function uploadAudio(blob)
     {
         var fd = new FormData();
-        var filename = "lkjkljl";
+        var filename = "nama-file-aurio";
 
         fd.append("upload", blob, filename);
         fd.append("_token", "{{ csrf_token() }}");
@@ -118,7 +118,7 @@
         $.ajax({
             type: "POST",
             url: "{{ route('upload') }}",
-            data: fd,                         
+            data: fd,
             cache: false,
             contentType: false,
             processData: false,
@@ -127,7 +127,17 @@
                 let html = `<p><audio style="width: 100%" controls="" src="${response}"></audio></p><p></p>`;
 
                 $("#recordAudioModal").modal("hide");
-                CKEDITOR.instances.content.insertHtml(html);
+
+                // mencari value
+                var namaEditor
+                if($('#audio-editor-name').val()){
+                     namaEditor = $('#audio-editor-name').val();
+                }
+                else{
+                    namaEditor = 'content'
+                }
+
+                CKEDITOR.instances[namaEditor].insertHtml(html);
             }
         });
     }
@@ -143,5 +153,5 @@
         $("#recordingsList").html(au);
         $("#attachRecord").removeClass("d-none").attr("disabled", false);
     }
-    
+
 </script>

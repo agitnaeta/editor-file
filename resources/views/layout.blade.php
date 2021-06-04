@@ -51,17 +51,18 @@
     <title>@yield('title')</title>
 </head>
 <body>
-    
+
     @yield('content')
 
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
     <script src="{{ asset('ckeditor/adapters/jquery.js') }}"></script>
-    
+
     @include('ckeditor')
     @include('audiorecorder')
     @include('videorecorder')
-    
+
+    @include('videorecorder-rtc')
     @yield('script')
 </body>
 </html>

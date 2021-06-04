@@ -28,6 +28,28 @@ class DocumentController extends Controller
         return view('document.create');
     }
 
+
+    /**
+     * Contoh membuat halaman dengan banyak CKEDITOR
+     */
+    public function createMultiple()
+    {
+        // array ini bisa dari mana saja
+
+        // Contoh angka
+        # $editors = [1,2,3,4,5];
+        $editors = ["editor1","editor2","editor3"];
+
+        // nanti editor di looping di view
+        // bagusnya semua di definisikan di controller
+        $data =[
+            'editors'=>$editors
+        ];
+
+        // buka create-multiple.blade.php
+        return view('document.create-multiple',$data);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -44,6 +66,17 @@ class DocumentController extends Controller
         return redirect()->route('document.index');
     }
 
+
+    public function storeMultiple(Request $request){
+        $titles = $request->title;
+        for($i = 0 ; $i < count($titles) ; $i++){
+            $document = new Document;
+            $document->title = $titles[$i];
+            $document->content = $request->content[$i];
+            $document->save();
+        }
+        return redirect()->route('document.index');
+    }
     /**
      * Display the specified resource.
      *

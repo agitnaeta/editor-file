@@ -29,14 +29,16 @@
             </div>
         </div>
     </div>
-    
+
 @endsection
 @section('script')
     <script>
         $(document).ready(function() {
             $.get( "{{ route('document.get', $id) }}", function( data ) {
                 $('#title').val(data.title);
-                CKEDITOR.instances.content.insertHtml(data.content);
+                CKEDITOR.on('instanceReady',function (){
+                    CKEDITOR.instances.content.insertHtml(data.content);
+                })
             });
         });
     </script>

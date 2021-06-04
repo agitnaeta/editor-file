@@ -1,7 +1,7 @@
 @extends('layout')
 @section('title','Document')
 @section('content')
-    
+
     <div class="container mt-5">
         <div class="row">
             <div class="col">
@@ -9,6 +9,7 @@
                     <div class="card-header">
                         <h4>Document</h4>
                         <a href="{{ route('document.create') }}" class="btn btn-primary">Tambah</a>
+                        <a href="{{ route('document.createMultiple') }}" class="btn btn-primary">Tambah Multiple</a>
                     </div>
                     <div class="card-body">
                         <table class="table">

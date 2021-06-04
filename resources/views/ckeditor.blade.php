@@ -29,7 +29,7 @@
     <div class="modal-dialog modal-lg  modal-dialog-centered">
         <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title" id="recordVideoModalLabel">Record Audio</h5>
+            <h5 class="modal-title" id="recordVideoModalLabel">Record Video</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
@@ -103,110 +103,114 @@
 </div>
 
 <script>
-        
-    let editor = CKEDITOR.replace('content', {
-        filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
-        filebrowserUploadMethod: 'form'
-    });
 
-    // Button
-    editor.ui.addButton('recordAudioButton', {
-        label: "Record Audio",
-        command: 'recordAudio',
-        toolbar: 'insertCustom',
-        icon: '{{ asset('icon/recordaudio.png') }}'
-    });
+    $(document).ready(function (){
+        if($('#content').length){
+            let editor = CKEDITOR.replace('content', {
+                filebrowserUploadUrl: "{{route('upload', ['_token' => csrf_token() ])}}",
+                filebrowserUploadMethod: 'form'
+            });
 
-    editor.ui.addButton('recordButton', {
-        label: "Record Video",
-        command: 'recordVideo',
-        toolbar: 'insertCustom',
-        icon: '{{ asset('icon/recordvideo.png') }}'
-    });
+            // Button
+            editor.ui.addButton('recordAudioButton', {
+                label: "Record Audio",
+                command: 'recordAudio',
+                toolbar: 'insertCustom',
+                icon: '{{ asset('icon/recordaudio.png') }}'
+            });
 
-    editor.ui.addButton('attachImage', {
-        label: "Attach Image",
-        command: 'attachImage',
-        toolbar: 'insertCustom',
-        icon: '{{ asset('icon/image.png') }}'
-    });
+            editor.ui.addButton('recordButton', {
+                label: "Record Video",
+                command: 'recordVideo',
+                toolbar: 'insertCustom',
+                icon: '{{ asset('icon/recordvideo.png') }}'
+            });
 
-    editor.ui.addButton('documentButton', {
-        label: "Attach Document",
-        command: 'attachDocument',
-        toolbar: 'insertCustom',
-        icon: '{{ asset('icon/document.png') }}'
-    });
-    
-    // Command
-    editor.addCommand("recordAudio", {
-        exec: function(edt) {
-            $("#recordingsList").html("");
-            $("#recordButton").text("Start Recording");
-            $("#attachRecord").addClass("d-none");
-            $("#recordAudioModal").modal("show");
-        }
-    });
+            editor.ui.addButton('attachImage', {
+                label: "Attach Image",
+                command: 'attachImage',
+                toolbar: 'insertCustom',
+                icon: '{{ asset('icon/image.png') }}'
+            });
 
-    editor.addCommand("recordVideo", {
-        exec: function(edt) {
-            $("#recordVideoModal").modal("show");
-        }
-    });
+            editor.ui.addButton('documentButton', {
+                label: "Attach Document",
+                command: 'attachDocument',
+                toolbar: 'insertCustom',
+                icon: '{{ asset('icon/document.png') }}'
+            });
 
-    editor.addCommand("attachImage", {
-        exec: function(edt) {
-            $("#attachImageModal").modal("show");
-        }
-    });
+            // Command
+            editor.addCommand("recordAudio", {
+                exec: function(edt) {
+                    $("#recordingsList").html("");
+                    $("#recordButton").text("Start Recording");
+                    $("#attachRecord").addClass("d-none");
+                    $("#recordAudioModal").modal("show");
+                }
+            });
 
-    editor.addCommand("attachDocument", {
-        exec: function(edt) {
-            $("#attachDocumentModal").modal("show");
-        }
-    });
+            editor.addCommand("recordVideo", {
+                exec: function(edt) {
+                    $("#recordVideoModal").modal("show");
+                }
+            });
 
-    $("#documentForm").submit(function(e)
-    {
-        e.preventDefault();
-        var formData = new FormData($(this)[0]);
-        $.ajax({
-            type: "POST",
-            url: "{{ route('upload') }}",
-            data: formData,                         
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(response)
+            editor.addCommand("attachImage", {
+                exec: function(edt) {
+                    $("#attachImageModal").modal("show");
+                }
+            });
+
+            editor.addCommand("attachDocument", {
+                exec: function(edt) {
+                    $("#attachDocumentModal").modal("show");
+                }
+            });
+
+            $("#documentForm").submit(function(e)
             {
-                let html = `<p><a href="${response}">${response}</a><p></p>`;
+                e.preventDefault();
 
-                $("#attachDocumentModal").modal("hide");
-                CKEDITOR.instances.content.insertHtml(html);
-            }
-        });
-    });
+                var formData = new FormData($(this)[0]);
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('upload') }}",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function(response)
+                    {
+                        let html = `<p><a href="${response}">${response}</a><p></p>`;
 
-    $("#imageForm").submit(function(e)
-    {
-        e.preventDefault();
-        console.log('ok');
-        var formData = new FormData($(this)[0]);
-        $.ajax({
-            type: "POST",
-            url: "{{ route('upload') }}",
-            data: formData,                         
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(response)
+                        $("#attachDocumentModal").modal("hide");
+                        CKEDITOR.instances.content.insertHtml(html);
+                    }
+                });
+            });
+
+            $("#imageForm").submit(function(e)
             {
-                let html = `<p><img src="${response}"><p></p>`;
+                e.preventDefault();
+                var formData = new FormData($(this)[0]);
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('upload') }}",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function(response)
+                    {
+                        let html = `<p><img src="${response}"><p></p>`;
 
-                $("#attachImageModal").modal("hide");
-                CKEDITOR.instances.content.insertHtml(html);
-            }
-        });
-    });
+                        $("#attachImageModal").modal("hide");
+                        CKEDITOR.instances.content.insertHtml(html);
+                    }
+                });
+            });
+        }
+    })
 
 </script>
