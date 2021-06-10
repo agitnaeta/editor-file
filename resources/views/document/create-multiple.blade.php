@@ -324,7 +324,7 @@
                     // Msukan Koleksi
                     arrayOfEditor.push(editorDinamis)
                 })
-            },3000)
+            },1000)
 
         }
 
