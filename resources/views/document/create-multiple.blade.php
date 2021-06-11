@@ -17,27 +17,40 @@
     $editor satu string
 --}}
                     <form action="{{ route('document.storeMultiple') }}" method='POST'>
-                    @foreach($editors as $editor)
-                    <div class="card-body">
                         {{ csrf_field() }}
+                    <div class="card-body">
+                      <div class="block-editor-utama form-group">
+                          <div class="form-editor-utama">
+                              <div class="form-group">
+                                  <label for="title">Judul</label>
+                                  <input type="text" required class="form-control" name="title[]" id="title">
+                              </div>
+                              <div class="form-group">
+                                  <label for="content">Konten Utama</label>
+                                  <textarea class="form-control"
+                                            required
+                                            id="editor-utama"
+                                            name="content[]"></textarea>
+                              </div>
+                          </div>
+                      </div>
+
+
+
+
+                      <div class="block-editor-dinamis">
+{{--                         DISINI AKAN MASUK FORM DINAMIS--}}
+                      </div>
+                      <div class="form-group text-center">
+                        <a href="#" id="tombol-tambah-form" class="btn btn-primary"> Tambah Pilihan </a>
+                        <input type="readonly" disabled value="0" id="jumlah_form_dinamis"/>
+                      </div>
+                    </div>
+                    <div class="card-footer">
                         <div class="form-group">
-                            <label for="title">Judul</label>
-                            <input type="text" required class="form-control" name="title[]" id="title">
-                        </div>
-                        <div class="form-group">
-                            <label for="content">Konten - {{$editor}}</label>
-                            <textarea class="form-control"
-                                      required
-                                      id="{{$editor}}"  {{-- Nama Editor Dinamis --}}
-                                      name="content[]"></textarea>
+                            <button class="btn btn-primary">Masukan Semua</button>
                         </div>
                     </div>
-                    @endforeach
-                        <div class="card-footer">
-                            <div class="form-group">
-                                <button class="btn btn-primary">Masukan Semua</button>
-                            </div>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -190,19 +203,134 @@
 @section('script')
     <script>
 
-{{--   $editors dapat dari backend yang sama nge load di text area      --}}
-        var editors = @json($editors);
+        var editors = ['editor-utama'];
         var arrayOfEditor = [];
-
-
-        // proses pembuatan objek
+        // proses pembuatan Editor Pertama
         editors.map((editor)=>{
             // buat objek
             var objectCKEDITOR =  CKEDITOR.replace(editor,{})
 
+            // tambahkan Button custom
+            tambahkanButtonCustom(objectCKEDITOR, editor)
+
             // objet editor di koleksi di array
             arrayOfEditor.push(objectCKEDITOR)
+        })
 
+
+
+
+        // Fungsi membuat tombol form baru
+        $('#tombol-tambah-form').click(function (e){
+            e.preventDefault()
+
+            let idform = Number($('#jumlah_form_dinamis').val()) + 1
+
+
+            // gunakan template literal perhatikan ${idform}
+            let formBaru  = `<div class="form-editor-dinamis" id="form-editor-dinamis-${idform}">
+                                  <div class="form-group input-block">
+                                      <label for="title">Judul</label>
+                                      <input type="text" required class="form-control" name="title[]" id="title">
+                                  </div>
+                                  <div class="form-group textarea-block">
+                                      <label for="content">Konten - <span class="content-title" ">${idform}</span></label>
+                                      <textarea class="form-control text-editor-dinamis"
+                                                required
+                                                id="editor-dinamis-${idform}"
+                                            name="content[]"></textarea>
+                                </div>
+                                <div class='form-group'>
+                                       <a href="#" class='btn btn-danger' onclick="deleteBlock(${idform})"> Hapus Block</a>
+                                </div>
+                            </div>`
+
+            // masukan ke block
+            $('.block-editor-dinamis').append(formBaru)
+
+            // masukan urutan terakhir ke jumlah_form_dinamis
+            $('#jumlah_form_dinamis').val(idform)
+
+            setTimeout(function (){
+                var editorName = `editor-dinamis-${idform}`;
+                if($(`#${editorName}`).length){
+                   var editorDinamis =  $(`#${editorName}`).ckeditor()
+
+                    // tambah kan button custom
+                   tambahkanButtonCustom(editorDinamis.editor, editorName)
+
+                    // Msukan Koleksi
+                   arrayOfEditor.push(editorDinamis)
+                }
+                else{
+                    alert(`Terjadi kesalahan Sistem`)
+                }
+            },300)
+        })
+
+        function deleteBlock(idform){
+
+
+            // jika hanya ingin hapus saja
+            // $(`#form-editor-dinamis-${idform}`).remove()
+
+            // Jika ingin urutan namanya berubah dan ter reset
+
+
+            $('.text-editor-dinamis').each(function (key,value){
+                let editorName = `editor-dinamis-${key+1}`;
+                CKEDITOR.instances[editorName].destroy()
+            })
+
+            $(`#form-editor-dinamis-${idform}`).remove()
+
+
+            // reset id text area
+            $('.text-editor-dinamis').each(function (key,value){
+                $(this).attr('id',`editor-dinamis-${key+1}`)
+            })
+
+            // reset label
+            $('.content-title').each(function (key,value){
+                $(this).html(key+1)
+            })
+
+            // reset block id
+            $('.form-editor-dinamis').each(function (key,value){
+                $(this).attr('id',`form-editor-dinamis${key+1}`)
+
+            })
+
+
+
+            //reset jumlah form dinamis
+             var jumlah = Number($("#jumlah_form_dinamis").val()) - 1
+             $("#jumlah_form_dinamis").val(jumlah)
+
+
+
+
+
+
+            setTimeout(function (){
+                $('.text-editor-dinamis').each(function (key,value){
+                    var editorName = `editor-dinamis-${key+1}`;
+                    var editorDinamis =  $(`#${editorName}`).ckeditor()
+                    console.log(editorName)
+
+                    // tambah kan button custom
+                    tambahkanButtonCustom(editorDinamis.editor, editorName)
+
+                    // Msukan Koleksi
+                    arrayOfEditor.push(editorDinamis)
+                })
+            },1000)
+
+        }
+
+
+        // Fungsi menambahkan tommbol dan fungsinya
+        function tambahkanButtonCustom(objectCKEDITOR, editor){
             // menambahkan button
             objectCKEDITOR.ui.addButton('recordAudioButton', {
                 label: "Record Audio",
@@ -239,8 +367,6 @@
                 toolbar: 'insertCustom',
                 icon: '{{ asset('icon/document.png') }}'
             });
-
-
 
 
             // Mendambahkan Command
@@ -291,17 +417,12 @@
                     $("#video-rtc-editor-name").val(editor);
                 }
             });
-
-
-        })
-
-
-        // Untuk Melihat kumpulan objek
-        console.log(arrayOfEditor)
+        }
 
 
 
-        // Kumpulan Fungsi nya
+
+
 
         // Upload Image
         $("#imageForm").submit(function(e)
@@ -353,6 +474,7 @@
                     let html = `<p><a href="${response}">${response}</a><p></p>`;
 
                     $("#attachDocumentModal").modal("hide");
+                    // Penempatan Dinamis
                     CKEDITOR.instances[editorName].insertHtml(html);
                 }
             });
